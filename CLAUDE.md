@@ -11,12 +11,17 @@ Expense tracker app from Mosh's [Claude Code course](https://codewithmosh.com/p/
 - `npm run dev` — Start Vite dev server (http://localhost:5173)
 - `npm run build` — Production build
 - `npm run lint` — ESLint
+- `npm run preview` — Preview production build
 
 ## Architecture
 
-Single-component React 19 app with Vite 7. All state and UI live in `src/App.jsx` — no routing, no state library, no backend. Plain CSS styling via `App.css` and `index.css`.
+React 19 app with Vite 7. No routing, no state library, no backend. Plain CSS styling via `App.css` and `index.css`.
+
+- `src/App.jsx` — Root component, owns `transactions` state
+- `src/Summary.jsx` — Displays income/expenses/balance totals (computes from `transactions` prop)
+- `src/TransactionForm.jsx` — Add transaction form (owns form state, calls `onAddTransaction` callback)
+- `src/TransactionList.jsx` — Filtered transaction table (owns filter state, receives `transactions` prop)
 
 ## Known Intentional Issues
 
-- Transaction amounts stored as strings, so `reduce()` concatenates instead of summing
 - "Freelance Work" is typed as "expense" instead of "income"
