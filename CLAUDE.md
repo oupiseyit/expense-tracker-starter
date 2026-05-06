@@ -14,9 +14,12 @@ npm run preview   # Preview production build
 
 ## Architecture
 
-This is a React 19 + Vite single-page app. All application logic lives in a single file:
+This is a React 19 + Vite single-page app. Components:
 
-- `src/App.jsx` — entire app: state, filtering, form handling, and rendering
+- `src/App.jsx` — root component; holds `transactions` state and composes child components
+- `src/Summary.jsx` — displays income/expenses/balance; computes totals from `transactions` prop
+- `src/TransactionForm.jsx` — form to add a new transaction; owns its own form state, calls `onAdd` prop
+- `src/TransactionList.jsx` — filterable table of transactions; owns filter state, receives `transactions` prop
 - `src/App.css` — all styles
 - `src/main.jsx` — React entry point
 
@@ -24,9 +27,7 @@ This is a React 19 + Vite single-page app. All application logic lives in a sing
 
 This is a starter project for a Claude Code course. It intentionally contains:
 
-- **Bug**: `amount` is stored as a string in transaction state. The `reduce` calls for `totalIncome` and `totalExpenses` use string concatenation instead of numeric addition.
 - **Poor UI**: minimal styling, no responsiveness polish
-- **Messy code**: monolithic component, no separation of concerns
 
 ### Data model
 
