@@ -1,9 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import Summary from './Summary'
 import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
 import SpendingChart from './SpendingChart'
+
+function MoonIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M12.5 8A5.5 5.5 0 0 1 7 13.5 5.5 5.5 0 0 1 1.5 8 5.5 5.5 0 0 1 7 2.5a4.2 4.2 0 0 0 5.5 5.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
+
+function SunIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+      <line x1="7.5" y1="1"   x2="7.5" y2="2.5"  stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="7.5" y1="12.5" x2="7.5" y2="14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="1"   y1="7.5" x2="2.5"  y2="7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="12.5" y1="7.5" x2="14" y2="7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="2.93" y1="2.93" x2="4.05" y2="4.05" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="10.95" y1="10.95" x2="12.07" y2="12.07" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="12.07" y1="2.93" x2="10.95" y2="4.05" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      <line x1="4.05" y1="10.95" x2="2.93" y2="12.07" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+    </svg>
+  )
+}
 
 function App() {
   const [transactions, setTransactions] = useState([
@@ -17,15 +41,45 @@ function App() {
     { id: 8, description: "Netflix", amount: 15, type: "expense", category: "entertainment", date: "2025-01-10" },
   ]);
 
+  const [theme, setTheme] = useState(() => localStorage.getItem('ft-theme') || 'day');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('ft-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    document.documentElement.classList.add('theme-transitioning');
+    setTheme(t => t === 'day' ? 'night' : 'day');
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 400);
+  };
+
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
   return (
     <div className="app">
-      <h1>Finance Tracker</h1>
-      <p className="subtitle">Track your income and expenses</p>
+      <header className="app-header">
+        <div>
+          <h1>Finance <em>Tracker</em></h1>
+          <p className="subtitle">Your personal money journal</p>
+        </div>
+        <div className="header-meta">
+          <div className="header-date">{dateStr}</div>
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === 'day' ? 'Switch to night mode' : 'Switch to day mode'}
+            title={theme === 'day' ? 'Night mode' : 'Day mode'}
+          >
+            {theme === 'day' ? <MoonIcon /> : <SunIcon />}
+          </button>
+        </div>
+      </header>
 
       <Summary transactions={transactions} />
       <TransactionForm onAdd={(t) => setTransactions([...transactions, t])} />
       <TransactionList transactions={transactions} onDelete={(id) => setTransactions(transactions.filter(t => t.id !== id))} />
-      <SpendingChart transactions={transactions} />
+      <SpendingChart transactions={transactions} theme={theme} />
     </div>
   );
 }
