@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(mkdir -p /Users/pisey/Documents/001-Pisey/001-Projects/expense-tracker-starter/.claude/commands)",
+      "Bash(npm run *)",
+      "Bash(kill %1)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)"
+    ],
+    "additionalDirectories": [
+      "/Users/pisey/Documents/001-Pisey/001-Projects/expense-tracker-starter/.claude"
     ]
   }
 }
