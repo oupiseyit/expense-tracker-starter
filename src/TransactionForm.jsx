@@ -20,7 +20,7 @@ function TransactionForm({ onAdd }) {
     if (!amount || isNaN(parsed) || parsed <= 0) return;
 
     onAdd({
-      id: crypto.randomUUID(),
+      id: Date.now(),
       description,
       amount: parsed,
       type,
@@ -40,17 +40,13 @@ function TransactionForm({ onAdd }) {
       <h2>Add Transaction</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="tx-description" className="sr-only">Description</label>
-        <div className="field-wrap">
-          <input
-            id="tx-description"
-            type="text"
-            placeholder="Description"
-            value={description}
-            className={descriptionError ? "input-error" : ""}
-            onChange={(e) => { setDescription(e.target.value); setDescriptionError(""); }}
-          />
-          {descriptionError && <span className="field-error">{descriptionError}</span>}
-        </div>
+        <input
+          id="tx-description"
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
         <label htmlFor="tx-amount" className="sr-only">Amount</label>
         <input
           id="tx-amount"
