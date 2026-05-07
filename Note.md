@@ -110,3 +110,13 @@ Option B
 Option C
 
 ```
+
+/agents
+
+help me review my code, identify issue and suggest improvements for readability, maintainability, performance and best practices.
+
+```
+use the code-reviewer subagent to review my code. 
+
+apply any of these fixes
+```
