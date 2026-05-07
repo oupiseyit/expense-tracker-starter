@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
+import { CATEGORIES } from './constants'
 
 function TransactionList({ transactions, onDelete }) {
   const [filterType, setFilterType] = useState("all");
@@ -28,7 +27,7 @@ function TransactionList({ transactions, onDelete }) {
           </select>
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
             <option value="all">All Categories</option>
-            {categories.map(cat => (
+            {CATEGORIES.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
@@ -42,10 +41,17 @@ function TransactionList({ transactions, onDelete }) {
             <th>Description</th>
             <th>Category</th>
             <th>Amount</th>
-            <th></th>
+            <th aria-label="Actions"></th>
           </tr>
         </thead>
         <tbody>
+          {filteredTransactions.length === 0 && (
+            <tr>
+              <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>
+                No transactions found.
+              </td>
+            </tr>
+          )}
           {filteredTransactions.map(t => (
             <tr key={t.id} className={`transaction-row ${t.type}`}>
               <td>{t.date}</td>

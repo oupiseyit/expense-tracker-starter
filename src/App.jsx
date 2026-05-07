@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import Summary from './Summary'
 import TransactionForm from './TransactionForm'
@@ -34,7 +34,7 @@ function App() {
     { id: 1, description: "Salary", amount: 5000, type: "income", category: "salary", date: "2025-01-01" },
     { id: 2, description: "Rent", amount: 1200, type: "expense", category: "housing", date: "2025-01-02" },
     { id: 3, description: "Groceries", amount: 150, type: "expense", category: "food", date: "2025-01-03" },
-    { id: 4, description: "Freelance Work", amount: 800, type: "expense", category: "salary", date: "2025-01-05" },
+    { id: 4, description: "Freelance Work", amount: 800, type: "income", category: "salary", date: "2025-01-05" },
     { id: 5, description: "Electric Bill", amount: 95, type: "expense", category: "utilities", date: "2025-01-06" },
     { id: 6, description: "Dinner Out", amount: 65, type: "expense", category: "food", date: "2025-01-07" },
     { id: 7, description: "Gas", amount: 45, type: "expense", category: "transport", date: "2025-01-08" },
@@ -42,19 +42,26 @@ function App() {
   ]);
 
   const [theme, setTheme] = useState(() => localStorage.getItem('ft-theme') || 'day');
+  const transitionTimer = useRef(null);
+
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('ft-theme', theme);
   }, [theme]);
 
+  useEffect(() => () => clearTimeout(transitionTimer.current), []);
+
   const toggleTheme = () => {
     document.documentElement.classList.add('theme-transitioning');
     setTheme(t => t === 'day' ? 'night' : 'day');
-    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 400);
+    clearTimeout(transitionTimer.current);
+    transitionTimer.current = setTimeout(
+      () => document.documentElement.classList.remove('theme-transitioning'),
+      400
+    );
   };
-
-  const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
     <div className="app">
@@ -77,8 +84,8 @@ function App() {
       </header>
 
       <Summary transactions={transactions} />
-      <TransactionForm onAdd={(t) => setTransactions([...transactions, t])} />
-      <TransactionList transactions={transactions} onDelete={(id) => setTransactions(transactions.filter(t => t.id !== id))} />
+      <TransactionForm onAdd={(t) => setTransactions(prev => [...prev, t])} />
+      <TransactionList transactions={transactions} onDelete={(id) => setTransactions(prev => prev.filter(tx => tx.id !== id))} />
       <SpendingChart transactions={transactions} theme={theme} />
     </div>
   );

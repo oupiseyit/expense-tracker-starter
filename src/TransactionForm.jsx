@@ -1,21 +1,28 @@
 import { useState } from 'react'
-
-const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
+import { CATEGORIES } from './constants'
 
 function TransactionForm({ onAdd }) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
   const [category, setCategory] = useState("food");
+  const [descriptionError, setDescriptionError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!description || !amount) return;
+    const parsed = parseFloat(amount);
+
+    if (!description.trim()) {
+      setDescriptionError("Description is required.");
+      return;
+    }
+
+    if (!amount || isNaN(parsed) || parsed <= 0) return;
 
     onAdd({
-      id: Date.now(),
+      id: crypto.randomUUID(),
       description,
-      amount,
+      amount: parsed,
       type,
       category,
       date: new Date().toISOString().split('T')[0],
@@ -25,30 +32,44 @@ function TransactionForm({ onAdd }) {
     setAmount("");
     setType("expense");
     setCategory("food");
+    setDescriptionError("");
   };
 
   return (
     <div className="add-transaction">
       <h2>Add Transaction</h2>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="tx-description" className="sr-only">Description</label>
+        <div className="field-wrap">
+          <input
+            id="tx-description"
+            type="text"
+            placeholder="Description"
+            value={description}
+            className={descriptionError ? "input-error" : ""}
+            onChange={(e) => { setDescription(e.target.value); setDescriptionError(""); }}
+          />
+          {descriptionError && <span className="field-error">{descriptionError}</span>}
+        </div>
+        <label htmlFor="tx-amount" className="sr-only">Amount</label>
         <input
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
+          id="tx-amount"
           type="number"
           placeholder="Amount"
+          min="0.01"
+          step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()}
         />
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <label htmlFor="tx-type" className="sr-only">Type</label>
+        <select id="tx-type" value={type} onChange={(e) => setType(e.target.value)}>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
         </select>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          {categories.map(cat => (
+        <label htmlFor="tx-category" className="sr-only">Category</label>
+        <select id="tx-category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          {CATEGORIES.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>

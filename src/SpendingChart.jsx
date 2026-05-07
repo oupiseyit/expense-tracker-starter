@@ -1,41 +1,43 @@
+import { useMemo } from 'react'
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, Cell, CartesianGrid, ResponsiveContainer } from 'recharts'
+import { CATEGORIES } from './constants'
 
 const COLORS = ['#b8602a', '#4a6fa5', '#3d8b7a', '#c9953a', '#8b6aaa', '#5c8a6e', '#8a7060']
 
 function SpendingChart({ transactions, theme }) {
   const isNight = theme === 'night'
-  const categories = ['food', 'housing', 'utilities', 'transport', 'entertainment', 'salary', 'other']
 
-  const data = categories
+  const data = useMemo(() => CATEGORIES
     .map((cat, i) => ({
       name: cat,
       value: transactions
         .filter(t => t.type === 'expense' && t.category === cat)
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: COLORS[i],
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0),
+      color: COLORS[i] ?? '#888888',
     }))
-    .filter(d => d.value > 0)
+    .filter(d => d.value > 0),
+  [transactions])
 
-  const tickStyle = {
-    fontSize: 11,
-    fill: isNight ? '#7a6048' : '#a88c7a',
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-  }
-
-  const tooltipStyle = {
-    background: isNight ? '#2e2010' : '#ffffff',
-    border: `1px solid ${isNight ? '#3e2e18' : '#e6ddd0'}`,
-    borderRadius: 8,
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-    fontSize: 13,
-    color: isNight ? '#f4e8d0' : '#2a1f14',
-    boxShadow: isNight
-      ? '0 4px 16px rgba(0,0,0,0.35)'
-      : '0 4px 16px rgba(42,31,20,0.1)',
-  }
-
-  const gridStroke = isNight ? '#3e2e18' : '#e6ddd0'
-  const lineColor  = isNight ? '#d4784a' : '#b8602a'
+  const { tickStyle, tooltipStyle, gridStroke, lineColor } = useMemo(() => ({
+    tickStyle: {
+      fontSize: 11,
+      fill: isNight ? '#7a6048' : '#a88c7a',
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+    },
+    tooltipStyle: {
+      background: isNight ? '#2e2010' : '#ffffff',
+      border: `1px solid ${isNight ? '#3e2e18' : '#e6ddd0'}`,
+      borderRadius: 8,
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+      fontSize: 13,
+      color: isNight ? '#f4e8d0' : '#2a1f14',
+      boxShadow: isNight
+        ? '0 4px 16px rgba(0,0,0,0.35)'
+        : '0 4px 16px rgba(42,31,20,0.1)',
+    },
+    gridStroke: isNight ? '#3e2e18' : '#e6ddd0',
+    lineColor:  isNight ? '#d4784a' : '#b8602a',
+  }), [isNight])
 
   if (data.length === 0) {
     return (
