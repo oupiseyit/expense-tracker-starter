@@ -37,7 +37,7 @@ extract the summary into a separate component
 ```
 
 ```Prompt
-move the calculation of tal incoe, expenses and balance in the summary component
+move the calculation of tal income, expenses and balance in the summary component
 ```
 
 ```Prompt
@@ -90,6 +90,8 @@ we should run all tests first, build the production bundle, and push to the stag
 
 +++ website download skill 
 skillsmp.com
+
+npx skills add anthropics/claude-code
 
 ```prompt
 /frontend-design improve the look and feel of this app.
